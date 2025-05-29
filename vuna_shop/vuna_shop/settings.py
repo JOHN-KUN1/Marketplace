@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +34,7 @@ ALLOWED_HOSTS = []
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'gofwenritji@gmail.com'
-EMAIL_HOST_PASSWORD = 'messi123...l'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_EMAIL_FROM = 'vunamarketplace <noreply@vunashop.com>'
@@ -42,9 +47,8 @@ LOGOUT_REDIRECT_URL = 'frontpage'
 SESSION_COOKIE_AGE = 86400
 CART_SESSION_ID = 'cart'
 
-STRIPE_PUB_KEY = 'pk_test_51RH3ivPEUAMyLYDavqq9sFfmssTGhKqL76lDEJzlbPiYfzNd5iSzWRo9ytGMExPs6a3TebO5LvDjdFYcfXTq9LMd00gOiYYUja'
-STRIPE_SECRET_KEY= 'sk_test_51RH3ivPEUAMyLYDaVHhxQsYWtFIOHnI0xV9S5U90YL3dCspxEwfumaSDxwTjEWeAbkBY9mQq2GdhflkK3jUDMMzS00pJqs3dYE'
-
+STRIPE_PUB_KEY = os.getenv('STRIPE_PUB_KEY')
+STRIPE_SECRET_KEY= os.getenv('STRIPE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
