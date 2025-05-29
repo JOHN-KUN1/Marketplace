@@ -1,0 +1,217 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %} | Vuna Marketplace</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+        <script src="{% static 'scripts/main.js' %}" defer></script>
+    </head>
+    <body>
+        <!-- Navigation Bar -->
+        <nav class="navbar is-primary is-fixed-top has-shadow">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a href="/" class="navbar-item">
+                        <span class="is-size-5 has-text-weight-bold">Vuna Marketplace</span>
+                    </a>
+        
+                    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-navbar">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+        
+                <div class="navbar-menu" id="main-navbar">
+                    <!-- Left-aligned items -->
+                    <div class="navbar-start">
+                        <div class="navbar-item is-expanded">
+                            <form method="get" action="{% url 'search' %}" class="is-flex-grow-1">
+                                <div class="field has-addons">
+                                    <div class="control is-expanded">
+                                        <input type="text" class="input is-rounded" name="query" placeholder="Search...">
+                                    </div>
+                                    <div class="control">
+                                        <button class="button is-primary is-rounded">
+                                            <span class="icon">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+        
+                    <!-- Right-aligned items -->
+                    <div class="navbar-end">
+                        <!-- Categories dropdown -->
+                        <div class="navbar-item has-dropdown is-hoverable is-hidden-touch">
+                            <a class="navbar-link">
+                                Categories
+                            </a>
+                            <div class="navbar-dropdown">
+                                {% for category in menu_categories %}
+                                    <a href="{% url 'category' category.slug %}" class="navbar-item">{{ category.title }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+        
+                        <!-- Contact link -->
+                        <a href="{% url 'contact' %}" class="navbar-item is-hidden-touch">
+                            Contact
+                        </a>
+
+                        <div class="navbar-item">
+                            <a href="{% url "cart" %}" class="button is-light"> Cart {% if cart %} ({{cart|length}}){% endif %}</a>
+                        </div>
+        
+                        <!-- User dropdown (replaces all auth buttons) -->
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link">
+                                <span class="icon">
+                                    {% if request.user.is_authenticated %}
+                                        <i class="fas fa-user-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-user"></i>
+                                    {% endif %}
+                                </span>
+                                <span class="is-hidden-mobile">{{ request.user.username }}</span>
+                            </a>
+                            <div class="navbar-dropdown is-right">
+                                {% if request.user.is_authenticated %}
+                                    <a href="{% url 'vendor_admin' %}" class="navbar-item">
+                                        <span class="icon-text">
+                                            <span class="icon">
+                                                <i class="fas fa-store"></i>
+                                            </span>
+                                            <span>Vendor Dashboard</span>
+                                        </span>
+                                    </a>
+                                    <a class="navbar-item">
+                                        <span class="icon-text">
+                                            <span class="icon">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                            </span>
+                                            <form method="post" action="{% url 'logout' %}">
+                                                {% csrf_token %}
+                                                <button type="submit">LOGOUT</button>
+                                            </form>
+                                        </span>
+                                    </a>
+                                    
+                                {% else %}
+                                    <a href="{% url 'login' %}" class="navbar-item">
+                                        <span class="icon-text">
+                                            <span class="icon">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                            </span>
+                                            <span>Login</span>
+                                        </span>
+                                    </a>
+                                    <a href="{% url 'become_vendor' %}" class="navbar-item">
+                                        <span class="icon-text">
+                                            <span class="icon">
+                                                <i class="fas fa-store"></i>
+                                            </span>
+                                            <span>Become Vendor</span>
+                                        </span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <section class="section" style="padding-top: 4rem;">
+            <div class="container">
+                {% if messages %}
+                    <div class="notification is-light">
+                        <button class="delete"></button>
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer has-background-primary has-text-white">
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-4">
+                        <h3 class="title is-4 has-text-white">Vuna Marketplace</h3>
+                        <p class="subtitle is-6 has-text-white">The best multivendor ecommerce platform for your business needs.</p>
+                        <div class="social-icons">
+                            <a href="#" class="mr-2"><i class="fab fa-facebook fa-lg"></i></a>
+                            <a href="#" class="mr-2"><i class="fab fa-twitter fa-lg"></i></a>
+                            <a href="#" class="mr-2"><i class="fab fa-instagram fa-lg"></i></a>
+                            <a href="#"><i class="fab fa-linkedin fa-lg"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="column is-2">
+                        <h4 class="title is-5 has-text-white">Shop</h4>
+                        <ul>
+                            {% for category in menu_categories|slice:":5" %}
+                                <li><a href="{% url 'category' category.slug %}" class="has-text-white">{{ category.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="column is-2">
+                        <h4 class="title is-5 has-text-white">Help</h4>
+                        <ul>
+                            <li><a href="{% url "vendors" %}" class="has-text-white">See all vendors</a></li>
+                            <li><a href="{% url 'contact' %}" class="has-text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="column is-4">
+                        <h4 class="title is-5 has-text-white">Newsletter</h4>
+                        <p class="mb-3">Subscribe to get updates on new products and special offers!</p>
+                        <form class="field has-addons">
+                            <div class="control is-expanded">
+                                <input class="input is-rounded" type="email" placeholder="Your email">
+                            </div>
+                            <div class="control">
+                                <button class="button is-white is-rounded">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <hr class="has-background-white">
+                
+                <div class="level">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <p>&copy; {% now "Y" %} Vuna Marketplace. All rights reserved.</p>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <div class="level-item">
+                            <a href="#" class="has-text-white mr-3">Terms of Service</a>
+                            <a href="#" class="has-text-white">Privacy Policy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        {% block scripts %}{% endblock scripts %}
+    </body>
+</html>

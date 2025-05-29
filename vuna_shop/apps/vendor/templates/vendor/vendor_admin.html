@@ -1,0 +1,212 @@
+{% extends "core/base.html" %}
+
+{% block title %}Vendor Admin | {{ vendor.name }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <!-- Vendor Header -->
+        <div class="box has-background-primary-light">
+            <div class="level">
+                <div class="level-left">
+                    <h1 class="title is-3 has-text-primary">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fas fa-store"></i>
+                            </span>
+                            <span>Vendor Dashboard - {{ vendor.name }}</span>
+                        </span>
+                    </h1>
+                </div>
+                <div class="level-right">
+                    <div class="tags has-addons">
+                        <span class="tag is-dark">Status</span>
+                        <span class="tag is-success">Active</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url "edit_vendor" %}" class="button is-info is-upppercase">Edit Vendor</a>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="columns mb-6">
+            <div class="column">
+                <div class="box has-text-centered">
+                    <p class="heading">Total Products</p>
+                    <p class="title">{{ products.count }}</p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box has-text-centered">
+                    <p class="heading">Orders Today</p>
+                    <p class="title">{{ total_orders }}</p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="box has-text-centered">
+                    <p class="heading">Total Revenue</p>
+                    <p class="title">₦{{vendor.get_paid_amount}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="title is-4">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fas fa-box-open"></i>
+                            </span>
+                            <span>My Products</span>
+                        </span>
+                    </h2>
+                </div>
+                <div class="level-right">
+                    <a href="{% url 'add_product' %}" class="button is-primary is-rounded">
+                        <span class="icon">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        <span>Add Product</span>
+                    </a>
+                </div>
+            </div>
+
+            {% if products %}
+                <div class="table-container">
+                    <table class="table is-fullwidth is-hoverable">
+                        <thead>
+                            <tr class="has-background-light">
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'product' product.category.slug product.slug %}">
+                                        {{ product.title }}
+                                    </a>
+                                </td>
+                                <td>${{ product.price }}</td>
+                                <td>
+                                    <span class="tag is-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="buttons are-small">
+                                        <a href="#" class="button is-info is-light" title="Edit">
+                                            <span class="icon">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                        </a>
+                                        <a href="#" class="button is-danger is-light" title="Delete">
+                                            <span class="icon">
+                                                <i class="fas fa-trash"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+            <article class="message is-info">
+                <div class="message-body">
+                    <div class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                        <span>You don't have any products yet. Add your first product to start selling!</span>
+                    </div>
+                </div>
+            </article>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="box">
+    <h2 class="is-size-3 mb-4">My orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="{% if order.fully_paid %}has-background-success-light{% else %}has-background-info-light{% endif %} mb-2 p-4">
+                <div class="columns is-multiline">
+                    <div class="column is-6">
+                        <h3 class="is-size-4">#{{ order.id }} - {{ order.first_name }} {{ order.last_name }}</h3>
+                    </div>
+
+                    <div class="column is-12">
+                        <b>Name:</b> {{ order.first_name }} {{ order.last_name }}<br>
+                        <b>Address:</b> {{ order.address }}<br>
+                        <b>Zip and place:</b> {{ order.zipcode }} {{ order.place }}<br>
+                        <b>E-mail:</b> {{ order.email }}<br>
+                        <b>Phone:</b> {{ order.phone }}
+
+                        <table class="table is-fullwidth mt-4">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Paid</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in order.items.all %}
+                                    {% if item.vendor == request.user.vendor %}
+                                        <tr>
+                                            <td>{{ item.product.title }}</td>
+                                            <td>${{ item.product.price }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ item.vendor_paid|yesno:"Yes,No" }}</td>
+                                            <td>${{ item.get_total_price }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    /* Custom styling for vendor admin */
+    .table th {
+        font-weight: 600;
+    }
+    
+    .table td, .table th {
+        vertical-align: middle;
+    }
+    
+    .tag.is-success {
+        background-color: #48c774;
+        color: white;
+    }
+    
+    .box {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .has-background-primary-light {
+        background-color: #eff5fb;
+    }
+    
+    .buttons.are-small .button {
+        height: 1.8em;
+    }
+</style>
+{% endblock %}

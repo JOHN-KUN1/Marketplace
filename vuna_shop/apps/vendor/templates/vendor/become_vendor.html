@@ -1,0 +1,124 @@
+{% extends "core/base.html" %}
+
+{% block title %}Become Vendor | {% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-half-desktop is-three-quarters-tablet">
+                <div class="box p-6">
+                    <h1 class="title has-text-centered mb-6">Join as a Vendor</h1>
+                    <p class="subtitle has-text-centered mb-6">
+                        Sell your products to thousands of customers on our platform
+                    </p>
+                    
+                    <form method="post" action=".">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="notification is-danger is-light mb-5">
+                                <button class="delete"></button>
+                                Please correct the errors below
+                            </div>
+                        {% endif %}
+                        
+                        {% for field in form %}
+                        <div class="field">
+                            <label class="label">{{ field.label_tag }}</label>
+                            <div class="control {% if field.field.widget.input_type == 'password' or field.name == 'password1' or field.name == 'password2' %}has-icons-right{% endif %}">
+                                {{ field }}
+                                {% if field.field.widget.input_type == 'password' or field.name == 'password1' or field.name == 'password2' %}
+                                <span class="icon is-small is-right">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if field.help_text %}
+                            <p class="help">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="field mt-6">
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth is-medium">
+                                    <span class="icon">
+                                        <i class="fas fa-store"></i>
+                                    </span>
+                                    <span>Become a Vendor</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-5">
+                    
+                    <div class="has-text-centered">
+                        <p class="mb-3">Already have an account?</p>
+                        <a href="{% url 'login' %}" class="button is-outlined is-primary">
+                            <span class="icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </span>
+                            <span>Log In</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Custom styling for vendor registration form */
+    .box {
+        border-radius: 10px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    input:not([type="checkbox"]),
+    textarea,
+    select {
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    input:not([type="checkbox"]):focus,
+    textarea:focus,
+    select:focus {
+        border-color: #485fc7;
+        box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+    }
+    
+    .label {
+        font-weight: 500;
+        margin-bottom: 0.5em;
+    }
+    
+    .help {
+        font-size: 0.85rem;
+    }
+    
+    /* Make checkboxes align properly */
+    .field input[type="checkbox"] {
+        margin-right: 0.5em;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+    // Remove notification when delete button is clicked
+    document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            $notification = $delete.parentNode;
+            
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+    });
+</script>
+{% endblock %}

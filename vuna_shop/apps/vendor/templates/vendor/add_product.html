@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Add Product | {% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-two-thirds">
+                <div class="box p-6">
+                    <h1 class="title has-text-centered mb-6">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </span>
+                            <span>Add New Product</span>
+                        </span>
+                    </h1>
+
+                    <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                        <div class="notification is-danger is-light mb-5">
+                            <button class="delete"></button>
+                            Please correct the errors below
+                        </div>
+                        {% endif %}
+                        
+                        {% for field in form %}
+                        <div class="field">
+                            <label class="label">{{ field.label_tag }}</label>
+                            
+                            {% if field.name == 'image' or field.name == 'thumbnail' %}
+                            <div class="file has-name is-fullwidth">
+                                <label class="file-label">
+                                    {{ field }}
+                                </label>
+                            </div>
+                            {% else %}
+                            <div class="control {% if field.field.widget.input_type == 'number' %}has-icons-right{% endif %}">
+                                {{ field }}
+                                {% if field.field.widget.input_type == 'number' %}
+                                <span class="icon is-small is-right">
+                                    <i class="fas fa-naira-sign"></i>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                            <p class="help">{{ field.help_text }}</p>
+                            {% endif %}
+                            
+                            {% for error in field.errors %}
+                            <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="field is-grouped is-grouped-centered mt-6">
+                            <div class="control">
+                                <button class="button is-primary is-medium">
+                                    <span class="icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                    <span>Submit Product</span>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="{% url 'vendor_admin' %}" class="button is-light is-medium">
+                                    <span class="icon">
+                                        <i class="fas fa-times-circle"></i>
+                                    </span>
+                                    <span>Cancel</span>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Custom form styling */
+    .box {
+        border-radius: 10px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    input:not([type="file"]),
+    textarea,
+    select {
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    input:not([type="file"]):focus,
+    textarea:focus,
+    select:focus {
+        border-color: #485fc7;
+        box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+    }
+    
+    .label {
+        font-weight: 500;
+        margin-bottom: 0.5em;
+    }
+    
+    .file-input {
+        display: none;
+    }
+    
+    /* Make checkboxes align properly */
+    input[type="checkbox"] {
+        margin-right: 0.5em;
+        vertical-align: middle;
+    }
+    
+    /* Style the select dropdown */
+    .select:not(.is-multiple):not(.is-loading)::after {
+        border-color: #485fc7;
+    }
+</style>
+
+<script>
+    // Update filename display when file is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle file input changes
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+                document.getElementById(`${this.id}-filename`).textContent = fileName;
+            });
+        });
+        
+        // Remove notification when delete button is clicked
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            $notification = $delete.parentNode;
+            
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+    });
+</script>
+{% endblock %}

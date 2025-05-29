@@ -1,0 +1,114 @@
+{% extends "core/base.html" %}
+
+{% block title %}Log in | {% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <div class="box">
+                    <h1 class="title has-text-centered mb-5">Welcome Back</h1>
+                    
+                    <form method="post" action="." class="mb-5">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="notification is-danger is-light">
+                                <button class="delete"></button>
+                                Your username and password didn't match. Please try again.
+                            </div>
+                        {% endif %}
+                        
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control has-icons-right">
+                                {{ form.username }}
+                                <span class="icon is-small is-right">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control has-icons-right">
+                                {{ form.password }}
+                                <span class="icon is-small is-right">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {% comment %} <div class="field is-grouped is-grouped-right">
+                            <div class="control">
+                                <a href="{% url 'password_reset' %}" class="is-size-7">Forgot password?</a>
+                            </div>
+                        </div> {% endcomment %}
+                        
+                        <div class="field mt-5">
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth is-medium">
+                                    <span class="icon">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </span>
+                                    <span>Log In</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-5">
+                    
+                    <div class="has-text-centered">
+                        <p class="mb-3">Don't have an account?</p>
+                        <a href="{% url 'become_vendor' %}" class="button is-outlined is-primary">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>Create Account</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Custom styling for form inputs */
+    .box {
+        border-radius: 8px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+        border-color: #485fc7;
+        box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+    }
+    
+    .label {
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    // Remove notification when delete button is clicked
+    document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            $notification = $delete.parentNode;
+            
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+    });
+</script>
+{% endblock %}
